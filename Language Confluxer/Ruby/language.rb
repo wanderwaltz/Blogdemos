@@ -20,67 +20,67 @@ module Language
 
     def next(length)
 
-     return unless length > 2
+      return unless length > 2
 
-     pair    = @starting_pairs.to_a[rand @starting_pairs.length]
-     string  = pair.dup
-     length -= 2
+      pair    = @starting_pairs.to_a[rand @starting_pairs.length]
+      string  = pair.dup
+      length -= 2
 
-     while length > 0 do
-      letters = @mapping[pair]
+      while length > 0 do
+        letters = @mapping[pair]
 
-      return string if letters == nil
+        return string if letters == nil
 
-      nextLetter = letters[rand letters.length]
-      string    << nextLetter
-      i          = string.length-2
-      pair       = string.chars[i..i+1].join
-      length    -= 1
+        nextLetter = letters[rand letters.length]
+        string    << nextLetter
+        i          = string.length-2
+        pair       = string.chars[i..i+1].join
+        length    -= 1
+      end
+
+      string
     end
-
-    string
-  end
 
   private
 
-  def process_file(filename)
+    def process_file(filename)
+      File.open(filename, "r") do |file_handle|
+        file_handle.each_line do |line|
+          process_line(line)
+        end
+      end      
+    end
 
-   File.open(filename, "r") do |file_handle|
-    file_handle.each_line do |line|
-     process_line(line)
-   end
- end      
 
-end
+    def process_line(line)
+      line.force_encoding Encoding::UTF_8
 
-def process_line(line)
- line.force_encoding Encoding::UTF_8
+      stripped = line.strip
+      downcase = Unicode::downcase stripped
 
- stripped = line.strip
- downcase = Unicode::downcase stripped
+      downcase.each_confluxer_group(2,1) do |pair, char, index|
+        add_to_mapping(pair, char)
 
- downcase.each_confluxer_group(2,1) do |pair, char, index|
-  add_to_mapping(pair, char)
+        @starting_pairs << pair if index == 0
+      end 
+    end
 
-  @starting_pairs << pair if index == 0
-end 
-end
 
-def add_to_mapping(prefix, value)
+    def add_to_mapping(prefix, value)
+      return unless value.length > 0
 
- return unless value.length > 0
+      values = @mapping[prefix]
 
- values = @mapping[prefix]
+      if values == nil
+        @mapping[prefix] = values = Array.new
+      end
 
- if values == nil
-  @mapping[prefix] = values = Array.new
-end
+      values.push value
+    end
 
-values.push value
-end
-end
+  end # Confluxer
 
-end
+end # Language
 
 
 class String
@@ -99,6 +99,7 @@ class String
       result
     end
   end
+
 
   def get_confluxer_group(start, *lengths)
 
