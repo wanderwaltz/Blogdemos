@@ -1,4 +1,11 @@
 # coding: utf-8
+#--------------------------------------------------------------------------
+#  language.rb
+#  Blogdemos/Language Confluxer
+#
+#  Created by Egor Chiglintsev on December 14, 2013.
+#  Copyright (c) 2013 Egor Chiglintsev. All rights reserved.
+#--------------------------------------------------------------------------
 require "unicode" # Need unicode gem for UTF-8 downcase 
 require "set"     # Set class
 
@@ -24,7 +31,7 @@ module Language
 
       pair    = @starting_pairs.to_a[rand @starting_pairs.length]
       string  = pair.dup
-      length -= 2
+      length -= 2 #first pair is already two chars
 
       while length > 0 do
         letters = @mapping[pair]
@@ -33,8 +40,7 @@ module Language
 
         nextLetter = letters[rand letters.length]
         string    << nextLetter
-        i          = string.length-2
-        pair       = string.chars[i..i+1].join
+        pair       = string[-2,2]
         length    -= 1
       end
 
@@ -53,10 +59,10 @@ module Language
 
 
     def process_line(line)
-      line.force_encoding Encoding::UTF_8
+      line.force_encoding(Encoding::UTF_8)
 
       stripped = line.strip
-      downcase = Unicode::downcase stripped
+      downcase = Unicode::downcase(stripped)
 
       downcase.each_confluxer_group(2,1) do |pair, char, index|
         add_to_mapping(pair, char)
@@ -71,11 +77,11 @@ module Language
 
       values = @mapping[prefix]
 
-      if values == nil
+      unless values
         @mapping[prefix] = values = Array.new
       end
 
-      values.push value
+      values << value
     end
 
   end # Confluxer
@@ -87,7 +93,7 @@ class String
 
   def each_confluxer_group(*lengths)
 
-    n = lengths.inject(0) {|sum, l| sum += l}
+    n = lengths.inject {|sum, l| sum += l}
 
     return if self.length < n
 
@@ -106,8 +112,7 @@ class String
     subgroups = Array.new
 
     lengths.inject(start) do |index, len|
-      range      = index...index+len
-      subgroups << self.chars[range].join
+      subgroups << self[index, len]
       index     += len
     end
 
