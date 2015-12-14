@@ -1,3 +1,6 @@
+.. DANGER::
+   Beware killer rabbits!
+
 *emphasis*
 
 **strong emphasis**
