@@ -38,3 +38,7 @@ the "page".
 
 .. [5] A numerical footnote. Note 
    there's no colon after the ``]``.
+   
+Check out this `relative link`_.
+
+.. _relative link: test1.rst
