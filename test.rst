@@ -1,4 +1,5 @@
 *emphasis*
+
 **strong emphasis**
 
 ===== 
@@ -29,3 +30,10 @@ is lifted up to be the document's
 +------------+ span rows. | - contain | 
 | body row 4 |            | - blocks. | 
 +------------+------------+-----------+
+
+Footnote references, like [5]_. 
+Note that footnotes may get 
+rearranged, e.g., to the bottom of 
+the "page".
+.. [5] A numerical footnote. Note 
+   there's no colon after the ``]``.
